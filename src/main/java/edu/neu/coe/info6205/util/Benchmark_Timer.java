@@ -8,8 +8,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-
+import java.util.Arrays;
+import java.util.Collections;
 import static edu.neu.coe.info6205.util.Utilities.formatWhole;
+import edu.neu.coe.info6205.sort.elementary.InsertionSort;
+import edu.neu.coe.info6205.graphs.BFS_and_prims.StdRandom;
 
 /**
  * This class implements a simple Benchmark utility for measuring the running time of algorithms.
@@ -31,6 +34,81 @@ import static edu.neu.coe.info6205.util.Utilities.formatWhole;
  */
 public class Benchmark_Timer<T> implements Benchmark<T> {
 
+
+    public static void main(String[] arg) {
+
+        InsertionSort<Integer> insert = new InsertionSort<Integer>();
+        int maxLength=10000;
+        Consumer<Integer[]> consumer=array->insert.sort(array, 0, array.length);
+        int initial=500;
+        Benchmark_Timer<Integer[]> benchmarkTimer = new Benchmark_Timer<Integer[]>("Insertion Sort", consumer);
+
+        int m = 50;
+        System.out.println("-----Ordered-----");
+
+        for (int i = initial; i < 20000; i += i) {
+            int incrementor=i;
+            //generating ordered array
+            Supplier<Integer[]> supplier = () -> {
+                Integer[] intArr = new Integer[incrementor];
+                for (int j = 0; j < incrementor; j++)
+                    intArr[j] = StdRandom.uniform(-maxLength, maxLength);
+                Arrays.sort(intArr);//Sorting
+                return intArr;
+            };
+
+            System.out.println(formatWhole(m) + " runs with " + incrementor + " in " + benchmarkTimer.runFromSupplier(supplier, m));
+        }
+
+        System.out.print("\n");
+        System.out.println("-----Partially Ordered-----");
+
+        for (int i = initial; i < 20000; i += i) {
+            int incrementor=i;
+            Supplier<Integer[]> supplier = () -> {
+                Integer[] a = new Integer[incrementor];
+                for (int j = 0; j < incrementor; j++)
+                    a[j] = StdRandom.uniform(-maxLength, maxLength);
+
+                Arrays.sort(a); //Sorting partially
+
+                for (int j = 0; j < incrementor/2; j++)
+                    a[j] = StdRandom.uniform(-maxLength, maxLength);
+
+                return a;
+            };
+            System.out.println(formatWhole(m) + " runs with " + incrementor + " in " + benchmarkTimer.runFromSupplier(supplier, m));
+        }
+
+        System.out.print("\n");
+        System.out.println("-----Randomly Ordered-----");
+        for (int i = initial; i < 20000; i += i) {
+            int incrementor=i;
+            Supplier<Integer[]> supplier = () -> {
+                Integer[] a = new Integer[incrementor];
+                for (int j = 0; j < incrementor; j++)
+                    a[j] = StdRandom.uniform(-maxLength, maxLength);
+                return a;
+            };
+            System.out.println(formatWhole(m) + " runs with " + incrementor + " in " + benchmarkTimer.runFromSupplier(supplier, m));
+        }
+
+
+        System.out.println("-----Reverse Ordered-----");
+
+        for (int i = initial; i < 20000; i += i) {
+            int incrementor=i;
+            Supplier<Integer[]> supplier = () -> {
+                Integer[] a = new Integer[incrementor];
+                for (int j = 0; j < incrementor; j++)
+                    a[j] = StdRandom.uniform(-maxLength, maxLength);
+                Arrays.sort(a, Collections.reverseOrder());//reverse sort
+                return a;
+            };
+            System.out.println(formatWhole(m) + " runs with " + incrementor + " in " + benchmarkTimer.runFromSupplier(supplier, m));
+        }
+    }
+
     /**
      * Calculate the appropriate number of warmup runs.
      *
@@ -50,7 +128,7 @@ public class Benchmark_Timer<T> implements Benchmark<T> {
      */
     @Override
     public double runFromSupplier(Supplier<T> supplier, int m) {
-        logger.info("Begin run: " + description + " with " + formatWhole(m) + " runs");
+        logger.info("Begin run: " + description + " -> ");
         // Warmup phase
         final Function<T, T> function = t -> {
             fRun.accept(t);
