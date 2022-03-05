@@ -15,8 +15,8 @@ public class Union_Find_Client {
             double sum=0;
             for (int j=0;j<t;j++)
                 sum+=count(i);
-            System.out.println("no. of Sites : " + i + ", no. of Runs: " + sum/t);
-        }
+                System.out.println("no. of Sites : " + i + ", no. of Pairs: " + sum/t);
+            }
     }
 
     public static int count(int n) {
